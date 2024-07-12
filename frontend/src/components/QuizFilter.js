@@ -15,7 +15,9 @@ const QuizFilter = ({
       errorMessage("날짜를 먼저 선택해 주세요");
     }
   };
-
+  if (!filters.dateOptions || filters.dateOptions.length === 0) {
+    return <div>Loading...</div>;
+  }
   return (
     <div>
       <h3 className="quiz">날짜와 응시할 방법을 선택하세요</h3>
