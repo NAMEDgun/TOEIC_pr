@@ -1,22 +1,95 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
 import QuizFilter from "./components/QuizFilter";
 import SolveQuiz from "./components/SolveQuiz";
-import "./styles.css";
+import "./styles/global.css";
 
 const App = () => {
-  const [filter, setFilter] = useState("eng");
-  const words = [
-    { eng: "apple", kor: "사과" },
-    { eng: "banana", kor: "바나나" },
-    { eng: "cherry", kor: "체리" },
-    // 추가 단어들...
-  ];
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [filters, setFilters] = useState({
+    dateOptions: [],
+    otherOptions: ["eng", "kor", "mix"], // 이후 DB에서 받아올 필터링 옵션들
+  });
+
+  // DB에서 필터링 옵션들을 받아오는 가정
+  useEffect(() => {
+    // 예시: API를 통해 실제 데이터베이스에서 필터링 옵션들을 가져오는 로직
+    const fetchFilters = async () => {
+      try {
+        // 예시: API 호출하여 필터링 옵션들을 받아옴
+        const response = await fetch("/api/filters");
+        const data = await response.json();
+        setFilters({
+          dateOptions: data.dateOptions,
+          otherOptions: data.otherOptions,
+        });
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000); // 3초 후 오류 메시지 자동으로 사라짐
+  };
 
   return (
-    <div className="app">
-      <h1>Vocabulary Quiz</h1>
-      <QuizFilter filter={filter} setFilter={setFilter} />
-      <SolveQuiz words={words} filter={filter} />
+    <Router>
+      <div className="app">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                filters={filters}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+                errorMessage={handleErrorMessage}
+              />
+            }
+          />
+          <Route
+            path="/solve-quiz"
+            element={
+              <SolveQuiz filters={filters} selectedFilters={selectedFilters} />
+            }
+          />
+        </Routes>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
+      </div>
+    </Router>
+  );
+};
+
+const Home = ({
+  filters,
+  selectedFilters,
+  setSelectedFilters,
+  errorMessage,
+}) => {
+  const navigate = useNavigate();
+
+  return (
+    <div>
+      <h1>토익 영단어 단어장</h1>
+      <QuizFilter
+        filters={filters}
+        selectedFilters={selectedFilters}
+        setSelectedFilters={setSelectedFilters}
+        errorMessage={errorMessage}
+      />
+      <button onClick={() => navigate("/solve-quiz")}>시험 시작</button>
     </div>
   );
 };
