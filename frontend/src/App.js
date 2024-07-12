@@ -1,5 +1,3 @@
-// src/App.js
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -31,6 +29,13 @@ const App = () => {
         });
       } catch (error) {
         console.error("Error fetching filters:", error);
+        if (error.response) {
+          handleErrorMessage(`서버 오류: ${error.response.status}`);
+        } else if (error.request) {
+          handleErrorMessage("서버 응답 없음");
+        } else {
+          handleErrorMessage("네트워크 오류");
+        }
       }
     };
 

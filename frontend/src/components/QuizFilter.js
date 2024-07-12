@@ -1,5 +1,7 @@
+// src/components/QuizFilter.js
+
 import React from "react";
-import "../styles/QuizFilter.module.css";
+import "../styles/QuizFilter.css"; // QuizFilter 컴포넌트의 CSS 파일을 import
 
 const QuizFilter = ({
   filters,
@@ -11,7 +13,6 @@ const QuizFilter = ({
     if (selectedFilters.includes("date")) {
       setSelectedFilters([filter]);
     } else {
-      // 날짜를 먼저 선택하라는 오류 메시지 반환
       errorMessage("날짜를 먼저 선택해 주세요");
     }
   };
@@ -22,9 +23,9 @@ const QuizFilter = ({
   }
 
   return (
-    <div>
-      <h3 className="quiz">날짜와 응시할 방법을 선택하세요</h3>
-      <div>
+    <div className="quiz-filter-container">
+      <h3 className="quiz-filter-title">날짜와 응시할 방법을 선택하세요</h3>
+      <div className="quiz-filter-select">
         <label htmlFor="date">시험 날짜: </label>
         <select
           id="date"
@@ -33,45 +34,47 @@ const QuizFilter = ({
         >
           <option value="">날짜 선택</option>
           {/* filters.days에서 각 옵션을 순회하며 동적으로 생성 */}
-          {filters.days.map((option) => (
-            <option key={option} value={option}>
-              DAY{option}
+          {filters.days.map((day) => (
+            <option key={day} value={day}>
+              DAY {day}
             </option>
           ))}
         </select>
       </div>
-      <div className="quiz">
-        <input
-          type="radio"
-          id="eng"
-          name="quizFilter"
-          value="eng"
-          checked={selectedFilters.includes("eng")}
-          onChange={() => handleFilterChange("eng")}
-        />
-        <label htmlFor="eng">ENG</label>
-      </div>
-      <div>
-        <input
-          type="radio"
-          id="kor"
-          name="quizFilter"
-          value="kor"
-          checked={selectedFilters.includes("kor")}
-          onChange={() => handleFilterChange("kor")}
-        />
-        <label htmlFor="kor">KOR</label>
-      </div>
-      <div>
-        <input
-          type="radio"
-          id="mix"
-          name="quizFilter"
-          value="mix"
-          checked={selectedFilters.includes("mix")}
-          onChange={() => handleFilterChange("mix")}
-        />
-        <label htmlFor="mix">MIX</label>
+      <div className="quiz-filter-options">
+        <div className="quiz-filter-radio">
+          <input
+            type="radio"
+            id="eng"
+            name="quizFilter"
+            value="eng"
+            checked={selectedFilters.includes("eng")}
+            onChange={() => handleFilterChange("eng")}
+          />
+          <label htmlFor="eng">ENG</label>
+        </div>
+        <div className="quiz-filter-radio">
+          <input
+            type="radio"
+            id="kor"
+            name="quizFilter"
+            value="kor"
+            checked={selectedFilters.includes("kor")}
+            onChange={() => handleFilterChange("kor")}
+          />
+          <label htmlFor="kor">KOR</label>
+        </div>
+        <div className="quiz-filter-radio">
+          <input
+            type="radio"
+            id="mix"
+            name="quizFilter"
+            value="mix"
+            checked={selectedFilters.includes("mix")}
+            onChange={() => handleFilterChange("mix")}
+          />
+          <label htmlFor="mix">MIX</label>
+        </div>
       </div>
     </div>
   );
