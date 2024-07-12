@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, distinct
 from fastapi import Depends
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,10 +17,14 @@ async def create_task(
     await db.refresh(task)
     return task
 
-async def get_words(filter: int):
-    db: AsyncSession = Depends(get_database)
-    result = await db.execute(select(task_model.Task).filter(task_model.Task.day == filter))
-    items = result.scalars().all()
+async def get_all_days(db: AsyncSession):
+    result = await db.execute(select(distinct(task_model.Task.day)))
+    days = result.scalars().all()
+    return days
+
+async def get_words(day: int, db:AsyncSession):
+    words = await db.execute(select(task_model.Task).filter(task_model.Task.day == day))
+    items = words.scalars().all()
     return items
 
 async def compare_databases(input_db: pd.DataFrame, original_db: pd.DataFrame):
