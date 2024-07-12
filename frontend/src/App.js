@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   BrowserRouter as Router,
   Route,
@@ -10,14 +11,37 @@ import SolveQuiz from "./components/SolveQuiz";
 import "./styles/global.css";
 
 const App = () => {
-  const [filter, setFilter] = useState("mix");
-  const [selectedDay, setSelectedDay] = useState("DAY1"); // 선택된 날짜 상태 추가
-  const words = [
-    { eng: "apple", kor: "사과" },
-    { eng: "banana", kor: "바나나" },
-    { eng: "cherry", kor: "체리" },
-    // 추가 단어들...
-  ];
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [filters, setFilters] = useState({
+    dateOptions: [],
+    otherOptions: ["eng", "kor", "mix"], // 이후 DB에서 받아올 필터링 옵션들
+  });
+
+  // DB에서 필터링 옵션들을 받아오는 가정
+  useEffect(() => {
+    const fetchFilters = async () => {
+      try {
+        const response = await axios.get("/");
+        const data = response.data;
+        setFilters({
+          dateOptions: data.dateOptions,
+          otherOptions: data.otherOptions,
+        });
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      }
+    };
+
+    fetchFilters();
+  }, []);
+
+  const handleErrorMessage = (message) => {
+    setErrorMessage(message);
+    setTimeout(() => {
+      setErrorMessage(null);
+    }, 3000); // 3초 후 오류 메시지 자동으로 사라짐
+  };
 
   return (
     <Router>
@@ -27,40 +51,42 @@ const App = () => {
             path="/"
             element={
               <Home
-                filter={filter}
-                setFilter={setFilter}
-                selectedDay={selectedDay}
-                setSelectedDay={setSelectedDay}
+                filters={filters}
+                selectedFilters={selectedFilters}
+                setSelectedFilters={setSelectedFilters}
+                errorMessage={handleErrorMessage}
               />
             }
           />
           <Route
             path="/solve-quiz"
             element={
-              <SolveQuiz
-                words={words}
-                filter={filter}
-                selectedDay={selectedDay}
-              />
-            } // SolveQuiz에도 선택된 날짜 전달
+              <SolveQuiz filters={filters} selectedFilters={selectedFilters} />
+            }
           />
         </Routes>
+        {errorMessage && <div className="error-message">{errorMessage}</div>}
       </div>
     </Router>
   );
 };
 
-const Home = ({ filter, setFilter, selectedDay, setSelectedDay }) => {
+const Home = ({
+  filters,
+  selectedFilters,
+  setSelectedFilters,
+  errorMessage,
+}) => {
   const navigate = useNavigate();
 
   return (
     <div>
       <h1>토익 영단어 단어장</h1>
       <QuizFilter
-        filter={filter}
-        setFilter={setFilter}
-        selectedDay={selectedDay}
-        setSelectedDay={setSelectedDay}
+        filters={filters}
+        selectedFilters={selectedFilters}
+        setSelectedFilters={setSelectedFilters}
+        errorMessage={errorMessage}
       />
       <button onClick={() => navigate("/solve-quiz")}>시험 시작</button>
     </div>

@@ -2,14 +2,19 @@ import React from "react";
 import "../styles/QuizFilter.module.css";
 
 const QuizFilter = ({
-  filter,
-  setFilter,
-  date,
-  setDate,
-  selectedDay,
-  setSelectedDay,
+  filters,
+  selectedFilters,
+  setSelectedFilters,
+  errorMessage,
 }) => {
-  const days = Array.from({ length: 15 }, (_, index) => `DAY${index + 1}`);
+  const handleFilterChange = (filter) => {
+    if (selectedFilters.includes("date")) {
+      setSelectedFilters([filter]);
+    } else {
+      // 날짜를 먼저 선택하라는 오류 메시지 반환
+      errorMessage("날짜를 먼저 선택해 주세요");
+    }
+  };
 
   return (
     <div>
@@ -18,12 +23,13 @@ const QuizFilter = ({
         <label htmlFor="date">시험 날짜: </label>
         <select
           id="date"
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
+          onChange={(e) => setSelectedFilters(["date"])}
+          value={selectedFilters.includes("date") ? "date" : ""}
         >
-          {days.map((day) => (
-            <option key={day} value={day}>
-              {day}
+          <option value="">날짜 선택</option>
+          {filters.dateOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
             </option>
           ))}
         </select>
@@ -34,8 +40,8 @@ const QuizFilter = ({
           id="eng"
           name="quizFilter"
           value="eng"
-          checked={filter === "eng"}
-          onChange={(e) => setFilter(e.target.value)}
+          checked={selectedFilters.includes("eng")}
+          onChange={() => handleFilterChange("eng")}
         />
         <label htmlFor="eng">ENG</label>
       </div>
@@ -45,8 +51,8 @@ const QuizFilter = ({
           id="kor"
           name="quizFilter"
           value="kor"
-          checked={filter === "kor"}
-          onChange={(e) => setFilter(e.target.value)}
+          checked={selectedFilters.includes("kor")}
+          onChange={() => handleFilterChange("kor")}
         />
         <label htmlFor="kor">KOR</label>
       </div>
@@ -56,8 +62,8 @@ const QuizFilter = ({
           id="mix"
           name="quizFilter"
           value="mix"
-          checked={filter === "mix"}
-          onChange={(e) => setFilter(e.target.value)}
+          checked={selectedFilters.includes("mix")}
+          onChange={() => handleFilterChange("mix")}
         />
         <label htmlFor="mix">MIX</label>
       </div>
