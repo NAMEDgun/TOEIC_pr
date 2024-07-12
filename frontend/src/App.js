@@ -1,3 +1,5 @@
+// src/App.js
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -14,18 +16,17 @@ const App = () => {
   const [selectedFilters, setSelectedFilters] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
   const [filters, setFilters] = useState({
-    dateOptions: [],
-    otherOptions: ["eng", "kor", "mix"], // 이후 DB에서 받아올 필터링 옵션들
+    days: [],
+    otherOptions: ["eng", "kor", "mix"],
   });
 
-  // DB에서 필터링 옵션들을 받아오는 가정
   useEffect(() => {
     const fetchFilters = async () => {
       try {
-        const response = await axios.get("/");
+        const response = await axios.get("http://localhost:8000/");
         const data = response.data;
         setFilters({
-          dateOptions: data.dateOptions,
+          days: data.days,
           otherOptions: data.otherOptions,
         });
       } catch (error) {
@@ -40,7 +41,7 @@ const App = () => {
     setErrorMessage(message);
     setTimeout(() => {
       setErrorMessage(null);
-    }, 3000); // 3초 후 오류 메시지 자동으로 사라짐
+    }, 3000);
   };
 
   return (

@@ -16,6 +16,11 @@ const QuizFilter = ({
     }
   };
 
+  // filters.days가 정의되지 않았거나 길이가 0인 경우 처리
+  if (!filters.days || filters.days.length === 0) {
+    return <div>Loading...</div>; // 또는 로딩 상태를 처리하는 UI 표시
+  }
+
   return (
     <div>
       <h3 className="quiz">날짜와 응시할 방법을 선택하세요</h3>
@@ -27,9 +32,10 @@ const QuizFilter = ({
           value={selectedFilters.includes("date") ? "date" : ""}
         >
           <option value="">날짜 선택</option>
-          {filters.dateOptions.map((option) => (
+          {/* filters.days에서 각 옵션을 순회하며 동적으로 생성 */}
+          {filters.days.map((option) => (
             <option key={option} value={option}>
-              {option}
+              DAY{option}
             </option>
           ))}
         </select>
