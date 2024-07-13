@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
+from typing import List
 import api.schemas.task as task_schema
 import api.cruds.task as task_crud
 import api.model.task as task_model
@@ -20,27 +20,11 @@ async def create_task(
 ):
     return await task_crud.create_task(db, task_body)
 
-@router.get("/test/{day}")
-async def test_day(day: int, db: AsyncSession = Depends(get_database)):
+@router.get("/test")
+async def test_day(day: int, filter: str, db: AsyncSession = Depends(get_database)):
     words = await task_crud.get_words(day, db)
     return words
 
-# @router.get("/compare")
-# async def compare_route(session: AsyncSession = Depends(get_session)):
-#     # 두 테이블의 데이터를 가져옴
-#     input_result = await session.execute(select(InputDB))
-#     original_result = await session.execute(select(OriginalDB))
-    
-#     input_data = input_result.scalars().algitl()
-#     original_data = original_result.scalars().all()
-
-#     # 데이터프레임으로 변환
-#     input_df = pd.DataFrame([{"eng": item.eng} for item in input_data])
-#     original_df = pd.DataFrame([{"eng": item.eng} for item in original_data])
-
-#     non_matching_rows, matching_count = await compare_databases(input_df, original_df)
-
-#     return {
-#         "non_matching_rows": non_matching_rows,
-#         "matching_count": matching_count
-#     }
+@router.get("/answer")
+async def compare_route(user_answer: List[task_schema.AnswerItem], db: AsyncSession = Depends(get_database)):
+    task_crud.compare_databases(user_answer, db)

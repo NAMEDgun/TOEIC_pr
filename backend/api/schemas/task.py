@@ -1,9 +1,10 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from typing import List
 
 class TaskBase(BaseModel):
-    day: int
-    eng: str
-    kor: str
+    day: int = None
+    eng: str = None
+    kor: str = None
     
 class TaskCreate(TaskBase):
     pass
@@ -13,3 +14,7 @@ class TaskCreateResponse(TaskCreate):
     
     class Config:
         orm_mode = True
+        
+class AnswerItem(TaskBase):
+    id: int
+    pass
